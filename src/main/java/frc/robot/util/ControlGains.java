@@ -111,7 +111,6 @@ public class ControlGains {
     return new PIDConstants(this.getKP(), this.getKI(), this.getKD());
   }
 
-
   public PIDController createPIDController() {
     return new PIDController(this.getKP(), this.getKI(), this.getKD());
   }

@@ -7,16 +7,20 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
+import choreo.auto.AutoChooser;
+import choreo.auto.AutoFactory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.autos.DriveTesting;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -24,8 +28,6 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import choreo.auto.AutoFactory;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -37,15 +39,19 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final AutoFactory autoFactory;
+  public final AutoChooser autoChooser;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
+  private static boolean hasRanAuto = false;
 
   // Dashboard inputs
-  private final LoggedDashboardChooser<Command> autoChooser;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    
+    
+
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -102,32 +108,52 @@ public class RobotContainer {
     }
 
     // Initialize ChoreoLib AutoFactory
-    autoFactory = new AutoFactory(
-        drive::getPose, // Function that returns the current robot pose
-        drive::setPose, // Function that resets the current robot pose to the provided Pose2d
-        drive::followTrajectory, // The drive subsystem trajectory follower
-        true, // If alliance flipping should be enabled
-        drive // The drive subsystem
-    );
+    autoFactory =
+        new AutoFactory(
+            drive::getPose, // Function that returns the current robot pose
+            drive::setPose, // Function that resets the current robot pose to the provided Pose2d
+            drive::followTrajectory, // The drive subsystem trajectory follower
+            true, // If alliance flipping should be enabled
+            drive // The drive subsystem
+            );
 
     // Set up auto routines
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    autoChooser = new AutoChooser();
+
+
+
+    autoChooser.addRoutine(
+        "Drive Straight Test", () -> DriveTesting.getRoutine(autoFactory, drive));
+
+
+    RobotModeTriggers.autonomous()
+        .whileTrue(
+            Commands.sequence(
+                new InstantCommand(() -> RobotContainer.hasRanAuto = true),
+                autoChooser.selectedCommandScheduler()));
 
     // Set up SysId routines
-    autoChooser.addOption(
-        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-    autoChooser.addOption(
-        "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Forward)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Reverse)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    // autoChooser.addCmd(
+    //     "Drive Wheel Radius Characterization",
+    //     () -> DriveCommands.wheelRadiusCharacterization(drive));
+    // autoChooser.addCmd(
+    //     "Drive Simple FF Characterization",
+    //     () -> DriveCommands.feedforwardCharacterization(drive));
+    // autoChooser.addCmd(
+    //     "Drive SysId (Quasistatic Forward)",
+    //     () -> drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    // autoChooser.addCmd(
+    //     "Drive SysId (Quasistatic Reverse)",
+    //     () -> drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    // autoChooser.addCmd(
+    //     "Drive SysId (Dynamic Forward)",
+    //     () -> drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    // autoChooser.addCmd(
+    //     "Drive SysId (Dynamic Reverse)",
+    //     () -> drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+    // Send to elastic
+    SmartDashboard.putData("Auto Chooser", autoChooser);
 
     // Configure the button bindings
     configureButtonBindings();
@@ -179,6 +205,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    return autoChooser.selectedCommand();
   }
 }
