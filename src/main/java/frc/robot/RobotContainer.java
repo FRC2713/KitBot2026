@@ -28,6 +28,8 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.feeder.Feeder;
+import frc.robot.subsystems.intakeAndLauncher.IntakeAndLauncher;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -38,6 +40,8 @@ import frc.robot.subsystems.drive.ModuleIOTalonFX;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final IntakeAndLauncher intake;
+  private final Feeder launcher;
   private final AutoFactory autoFactory;
   public final AutoChooser autoChooser;
 
@@ -49,8 +53,6 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    
-    
 
     switch (Constants.currentMode) {
       case REAL:
@@ -82,6 +84,8 @@ public class RobotContainer {
         // new ModuleIOTalonFXS(TunerConstants.FrontRight),
         // new ModuleIOTalonFXS(TunerConstants.BackLeft),
         // new ModuleIOTalonFXS(TunerConstants.BackRight));
+        this.intake = new IntakeAndLauncher();
+        this.launcher = new Feeder();
         break;
 
       case SIM:
@@ -93,6 +97,8 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
+        this.intake = new IntakeAndLauncher();
+        this.launcher = new Feeder();
         break;
 
       default:
@@ -104,6 +110,8 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+        this.intake = new IntakeAndLauncher();
+        this.launcher = new Feeder();
         break;
     }
 
@@ -120,11 +128,8 @@ public class RobotContainer {
     // Set up auto routines
     autoChooser = new AutoChooser();
 
-
-
     autoChooser.addRoutine(
         "Drive Straight Test", () -> DriveTesting.getRoutine(autoFactory, drive));
-
 
     RobotModeTriggers.autonomous()
         .whileTrue(
@@ -189,7 +194,7 @@ public class RobotContainer {
 
     // Reset gyro to 0° when B button is pressed
     controller
-        .b()
+        .start()
         .onTrue(
             Commands.runOnce(
                     () ->
@@ -197,6 +202,20 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
+    // Start intake while left-Trigger is held
+    controller
+        .leftBumper()
+        .whileTrue(Commands.parallel(intake.voltageCmd(-8.0), launcher.voltageCmd(-8.0)))
+        .onFalse(Commands.parallel(intake.voltageCmd(0.0), launcher.voltageCmd(0.0)));
+
+    // Start launcher when right-Trigger is held
+    controller
+        .rightBumper()
+        .whileTrue(
+            Commands.parallel(
+                launcher.voltageCmd(8.0),
+                Commands.sequence(Commands.waitSeconds(1), intake.voltageCmd(-8.0))))
+        .onFalse(Commands.parallel(intake.voltageCmd(0.0), launcher.voltageCmd(0.0)));
   }
 
   /**
