@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Feeder extends SubsystemBase {
   private double commandedrpm;
   private SparkMax motorController = new SparkMax(2, MotorType.kBrushed);
+  //TODO: needs current limits
 
   public void setRPM(double launcherRPMset) {
     commandedrpm = launcherRPMset;

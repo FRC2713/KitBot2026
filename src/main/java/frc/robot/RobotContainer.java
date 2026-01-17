@@ -40,8 +40,8 @@ import frc.robot.subsystems.intakeAndLauncher.IntakeAndLauncher;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final IntakeAndLauncher intake;
-  private final Feeder launcher;
+  private final IntakeAndLauncher intakeAndShooter;
+  private final Feeder feederAndIndexer;
   private final AutoFactory autoFactory;
   public final AutoChooser autoChooser;
 
@@ -84,8 +84,8 @@ public class RobotContainer {
         // new ModuleIOTalonFXS(TunerConstants.FrontRight),
         // new ModuleIOTalonFXS(TunerConstants.BackLeft),
         // new ModuleIOTalonFXS(TunerConstants.BackRight));
-        this.intake = new IntakeAndLauncher();
-        this.launcher = new Feeder();
+        this.intakeAndShooter = new IntakeAndLauncher();
+        this.feederAndIndexer = new Feeder();
         break;
 
       case SIM:
@@ -97,8 +97,8 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
-        this.intake = new IntakeAndLauncher();
-        this.launcher = new Feeder();
+        this.intakeAndShooter = new IntakeAndLauncher();
+        this.feederAndIndexer = new Feeder();
         break;
 
       default:
@@ -110,8 +110,8 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        this.intake = new IntakeAndLauncher();
-        this.launcher = new Feeder();
+        this.intakeAndShooter = new IntakeAndLauncher();
+        this.feederAndIndexer = new Feeder();
         break;
     }
 
@@ -175,9 +175,9 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> 0.7 * controller.getLeftY(),
+            () -> 0.7 * controller.getLeftX(),
+            () -> -0.7 * controller.getRightX()));
 
     // Lock to 0° when A button is held
     controller
@@ -205,17 +205,21 @@ public class RobotContainer {
     // Start intake while left-Trigger is held
     controller
         .leftBumper()
-        .whileTrue(Commands.parallel(intake.voltageCmd(-8.0), launcher.voltageCmd(-8.0)))
-        .onFalse(Commands.parallel(intake.voltageCmd(0.0), launcher.voltageCmd(0.0)));
+        .whileTrue(
+            Commands.parallel(
+                intakeAndShooter.voltageCmd(-6.0), feederAndIndexer.voltageCmd(-12.0)))
+        .onFalse(
+            Commands.parallel(intakeAndShooter.voltageCmd(0.0), feederAndIndexer.voltageCmd(0.0)));
 
     // Start launcher when right-Trigger is held
     controller
         .rightBumper()
         .whileTrue(
             Commands.parallel(
-                launcher.voltageCmd(8.0),
-                Commands.sequence(Commands.waitSeconds(1), intake.voltageCmd(-8.0))))
-        .onFalse(Commands.parallel(intake.voltageCmd(0.0), launcher.voltageCmd(0.0)));
+                intakeAndShooter.voltageCmd(-11.0),
+                Commands.sequence(Commands.waitSeconds(.5), feederAndIndexer.voltageCmd(8.0))))
+        .onFalse(
+            Commands.parallel(intakeAndShooter.voltageCmd(0.0), feederAndIndexer.voltageCmd(0.0)));
   }
 
   /**
