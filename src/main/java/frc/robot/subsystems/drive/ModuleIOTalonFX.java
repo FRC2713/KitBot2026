@@ -212,7 +212,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     // Log CAN Bus Health
     Logger.recordOutput("CAN/DeviceStatus/Talons/" + driveTalon.getDeviceID(), driveStatus);
     Logger.recordOutput("CAN/DeviceStatus/Talons/" + turnTalon.getDeviceID(), turnStatus);
-    Logger.recordOutput("CAN/DeviceStatus/CANoders/" + cancoder.getDeviceID(), turnEncoderStatus);
+    Logger.recordOutput("CAN/DeviceStatus/CANCoders/" + cancoder.getDeviceID(), turnEncoderStatus);
 
     // Update odometry inputs
     inputs.odometryTimestamps =
