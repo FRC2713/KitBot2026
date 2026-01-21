@@ -36,6 +36,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.generated.TunerConstants;
 import java.util.Queue;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * Module IO implementation for Talon FX drive motor controller, Talon FX turn motor controller, and
@@ -207,6 +208,11 @@ public class ModuleIOTalonFX implements ModuleIO {
     inputs.turnVelocityRadPerSec = Units.rotationsToRadians(turnVelocity.getValueAsDouble());
     inputs.turnAppliedVolts = turnAppliedVolts.getValueAsDouble();
     inputs.turnCurrentAmps = turnCurrent.getValueAsDouble();
+
+    // Log CAN Bus Health
+    Logger.recordOutput("CAN/DeviceStatus/Talons/" + driveTalon.getDeviceID(), driveStatus);
+    Logger.recordOutput("CAN/DeviceStatus/Talons/" + turnTalon.getDeviceID(), turnStatus);
+    Logger.recordOutput("CAN/DeviceStatus/CANCoders/" + cancoder.getDeviceID(), turnEncoderStatus);
 
     // Update odometry inputs
     inputs.odometryTimestamps =
