@@ -30,6 +30,7 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.intakeAndLauncher.IntakeAndLauncher;
+import frc.robot.util.CANHealthLogger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -42,12 +43,15 @@ public class RobotContainer {
   private final Drive drive;
   private final IntakeAndLauncher intakeAndShooter;
   private final Feeder feederAndIndexer;
-  private final AutoFactory autoFactory;
-  public final AutoChooser autoChooser;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
   private static boolean hasRanAuto = false;
+
+  // Utility
+  private final AutoFactory autoFactory;
+  public final AutoChooser autoChooser;
+  private final CANHealthLogger canLogger;
 
   // Dashboard inputs
 
@@ -114,6 +118,7 @@ public class RobotContainer {
         this.feederAndIndexer = new Feeder();
         break;
     }
+    this.canLogger = new CANHealthLogger();
 
     // Initialize ChoreoLib AutoFactory
     autoFactory =
