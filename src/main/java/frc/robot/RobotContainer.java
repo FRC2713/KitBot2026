@@ -23,13 +23,16 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.autos.DriveTesting;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.feeder.Feeder;
+import frc.robot.subsystems.feeder.FeederConstants;
 import frc.robot.subsystems.intakeAndLauncher.IntakeAndLauncher;
+import frc.robot.subsystems.intakeAndLauncher.IntakeAndLauncherConstants;
 import frc.robot.util.CANHealthLogger;
 
 /**
@@ -180,9 +183,9 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> 0.7 * controller.getLeftY(),
-            () -> 0.7 * controller.getLeftX(),
-            () -> -0.7 * controller.getRightX()));
+            () -> DriveConstants.speedScalar.get() * controller.getLeftY(),
+            () -> DriveConstants.speedScalar.get() * controller.getLeftX(),
+            () -> DriveConstants.speedScalar.get() * -controller.getRightX()));
 
     // Lock to 0° when A button is held
     controller
@@ -212,7 +215,8 @@ public class RobotContainer {
         .leftBumper()
         .whileTrue(
             Commands.parallel(
-                intakeAndShooter.voltageCmd(-6.0), feederAndIndexer.voltageCmd(-12.0)))
+                intakeAndShooter.voltageCmd(IntakeAndLauncherConstants.intakeVoltage.get()),
+                feederAndIndexer.voltageCmd(FeederConstants.intakeVoltage.get())))
         .onFalse(
             Commands.parallel(intakeAndShooter.voltageCmd(0.0), feederAndIndexer.voltageCmd(0.0)));
 
@@ -221,8 +225,10 @@ public class RobotContainer {
         .rightBumper()
         .whileTrue(
             Commands.parallel(
-                intakeAndShooter.voltageCmd(-11.0),
-                Commands.sequence(Commands.waitSeconds(.5), feederAndIndexer.voltageCmd(8.0))))
+                intakeAndShooter.voltageCmd(IntakeAndLauncherConstants.launchVoltage.get()),
+                Commands.sequence(
+                    Commands.waitSeconds(IntakeAndLauncherConstants.launchWarmUpTime.get()),
+                    feederAndIndexer.voltageCmd(FeederConstants.launchVoltage.get()))))
         .onFalse(
             Commands.parallel(intakeAndShooter.voltageCmd(0.0), feederAndIndexer.voltageCmd(0.0)));
   }

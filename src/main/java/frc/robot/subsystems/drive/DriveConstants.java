@@ -2,6 +2,7 @@ package frc.robot.subsystems.drive;
 
 import frc.robot.util.ControlGains;
 import frc.robot.util.LoggedTunableGains;
+import frc.robot.util.LoggedTunableNumber;
 
 public class DriveConstants {
   public final class AutoConstants {
@@ -12,4 +13,6 @@ public class DriveConstants {
     public static final LoggedTunableGains headingTrajectoryController =
         new LoggedTunableGains("headingTraj", new ControlGains().p(3).d(0.0));
   }
+  public final static LoggedTunableNumber speedScalar =
+    new LoggedTunableNumber("Drive/Drive Speed Scalar", 1);
 }
