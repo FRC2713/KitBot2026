@@ -33,6 +33,7 @@ import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.FeederConstants;
 import frc.robot.subsystems.intakeAndLauncher.IntakeAndLauncher;
 import frc.robot.subsystems.intakeAndLauncher.IntakeAndLauncherConstants;
+import frc.robot.subsystems.prototype.Prototype;
 import frc.robot.util.CANHealthLogger;
 
 /**
@@ -46,6 +47,7 @@ public class RobotContainer {
   private final Drive drive;
   private final IntakeAndLauncher intakeAndShooter;
   private final Feeder feederAndIndexer;
+  private final Prototype prototype;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -121,6 +123,7 @@ public class RobotContainer {
         this.feederAndIndexer = new Feeder();
         break;
     }
+    prototype = new Prototype();
     this.canLogger = new CANHealthLogger();
 
     // Initialize ChoreoLib AutoFactory
@@ -231,6 +234,11 @@ public class RobotContainer {
                     feederAndIndexer.voltageCmd(FeederConstants.launchVoltage.get()))))
         .onFalse(
             Commands.parallel(intakeAndShooter.voltageCmd(0.0), feederAndIndexer.voltageCmd(0.0)));
+    // prototype controls
+    controller
+        .x()
+        .whileTrue(prototype.voltageCmdPrototype(5))
+        .whileFalse(prototype.voltageCmdPrototype(0));
   }
 
   /**
