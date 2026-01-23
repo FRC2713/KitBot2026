@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.autos.DriveTesting;
+import frc.robot.commands.autos.StartCollectShoot;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
@@ -138,7 +139,9 @@ public class RobotContainer {
 
     autoChooser.addRoutine(
         "Drive Straight Test", () -> DriveTesting.getRoutine(autoFactory, drive));
-
+    autoChooser.addRoutine(
+        "Start, Collect, and Shoot",
+        () -> StartCollectShoot.getRoutine(autoFactory, drive, intakeAndShooter, feederAndIndexer));
     RobotModeTriggers.autonomous()
         .whileTrue(
             Commands.sequence(

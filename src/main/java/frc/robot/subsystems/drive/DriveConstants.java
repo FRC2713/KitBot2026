@@ -13,6 +13,7 @@ public class DriveConstants {
     public static final LoggedTunableGains headingTrajectoryController =
         new LoggedTunableGains("headingTraj", new ControlGains().p(3).d(0.0));
   }
-  public final static LoggedTunableNumber speedScalar =
-    new LoggedTunableNumber("Drive/Drive Speed Scalar", 1);
+
+  public static final LoggedTunableNumber speedScalar =
+      new LoggedTunableNumber("Drive/Drive Speed Scalar", 1);
 }
