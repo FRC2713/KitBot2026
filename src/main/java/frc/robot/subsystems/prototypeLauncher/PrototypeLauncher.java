@@ -1,4 +1,4 @@
-package frc.robot.subsystems.prototype;
+package frc.robot.subsystems.prototypeLauncher;
 
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
-public class Prototype extends SubsystemBase {
+public class PrototypeLauncher extends SubsystemBase {
   private TalonFX leftMotor = new TalonFX(2);
   private TalonFX rightMotor = new TalonFX(1);
   private double trackedvoltage = 0;
@@ -18,7 +18,7 @@ public class Prototype extends SubsystemBase {
     Logger.recordOutput("Prototype/voltage", trackedvoltage);
   }
 
-  public Prototype() {
+  public PrototypeLauncher() {
     rightMotor.setControl(new Follower(leftMotor.getDeviceID(), MotorAlignmentValue.Opposed));
   }
 
