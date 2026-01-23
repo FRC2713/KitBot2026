@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.autos.AutoConstants;
 import frc.robot.commands.autos.DriveTesting;
 import frc.robot.commands.autos.StartCollectShoot;
 import frc.robot.generated.TunerConstants;
@@ -170,6 +171,9 @@ public class RobotContainer {
 
     // Send to elastic
     SmartDashboard.putData("Auto Chooser", autoChooser);
+
+    // Initialize auto tunable numbers so they appear on dashboard
+    AutoConstants.initialize();
 
     // Configure the button bindings
     configureButtonBindings();

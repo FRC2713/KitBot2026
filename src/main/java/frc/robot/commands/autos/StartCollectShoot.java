@@ -27,27 +27,39 @@ public class StartCollectShoot {
         .active()
         .onTrue(
             Commands.sequence(
-                new InstantCommand(() -> System.out.println("Going to fuel")),
+                new InstantCommand(() -> Commands.print("Going to fuel")),
                 faceFuel.resetOdometry(),
                 faceFuel.cmd()));
 
     faceFuel
         .done()
         .onTrue(
-            Commands.parallel(
-                intakeAndShooter.voltageCmd(IntakeAndLauncherConstants.intakeVoltage.get()),
-                collectFuel.cmd()));
-    collectFuel.done().onTrue(fuelToShot.cmd());
+            Commands.sequence(
+                new InstantCommand(() -> Commands.print("Starting intake and collecting fuel")),
+                Commands.parallel(
+                    intakeAndShooter.voltageCmd(IntakeAndLauncherConstants.intakeVoltage.get()),
+                    collectFuel.cmd())));
+    collectFuel
+        .done()
+        .onTrue(
+            Commands.sequence(
+                new InstantCommand(() -> Commands.print("Moving to shooting position")),
+                fuelToShot.cmd()));
     fuelToShot
         .done()
         .onTrue(
-            Commands.race(
-                Commands.parallel(
-                    intakeAndShooter.voltageCmd(IntakeAndLauncherConstants.launchVoltage.get()),
-                    Commands.sequence(
-                        Commands.waitSeconds(IntakeAndLauncherConstants.launchWarmUpTime.get()),
-                        feederAndIndexer.voltageCmd(FeederConstants.launchVoltage.get()))),
-                Commands.waitSeconds(AutoConstants.launchLength.get())));
+            Commands.sequence(
+                new InstantCommand(() -> Commands.print("Starting launch sequence")),
+                Commands.race(
+                    Commands.parallel(
+                        intakeAndShooter.voltageCmd(IntakeAndLauncherConstants.launchVoltage.get()),
+                        Commands.sequence(
+                            Commands.waitSeconds(IntakeAndLauncherConstants.launchWarmUpTime.get()),
+                            Commands.sequence(
+                                new InstantCommand(
+                                    () -> Commands.print("Feeding fuel to launcher")),
+                                feederAndIndexer.voltageCmd(FeederConstants.launchVoltage.get())))),
+                    Commands.waitSeconds(AutoConstants.launchDuration.get()))));
 
     return routine;
   }
