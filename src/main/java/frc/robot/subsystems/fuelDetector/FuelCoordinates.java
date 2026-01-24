@@ -10,6 +10,7 @@ public class FuelCoordinates {
     public double boxY2;
     public double width;
     public double height;
+    public double depth;
 
     public FuelCoordinates(double x, double y, double boxWidth, double boxHeight, double c) {
         boxX = x;
@@ -19,6 +20,7 @@ public class FuelCoordinates {
         computeCenterPoint(boxX, boxY, boxX2, boxY2);
         width = boxWidth;
         height = boxHeight;
+        computeDepth(45); //TODO: replace 45 with constant for camera FOV
         chance = c;
     }
     private static double pointFromDistance(double point, double length) {
@@ -33,5 +35,9 @@ public class FuelCoordinates {
         int squareX = (int) Math.round(centerX / gridWidth);
         int squareY = (int) Math.round(centerY / gridHeight);
         squareArray[squareX][squareY].addFuel(this);
+    }
+    //TODO: implement depth function
+    public double computeDepth(double cameraFOV) {
+        return 0.0;
     }
 }

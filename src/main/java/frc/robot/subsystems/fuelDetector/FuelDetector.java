@@ -13,6 +13,7 @@ public class FuelDetector extends SubsystemBase {
 
         //Implement when Limelight/camera detection is actually working
     }
+
     public ArrayList<FuelCoordinates> filterByHighChance(FuelCoordinates[] inputs) {
         //There's probably an easier and shorter way of doing this, but this is simple. Feel free to change it as long as the output doesn't change.
         ArrayList<FuelCoordinates> output = new ArrayList<>(0);
@@ -23,6 +24,7 @@ public class FuelDetector extends SubsystemBase {
         }
         return output;
     }
+
     public FuelSquare[][] divideIntoSquares(ArrayList<FuelCoordinates> fuelCoords, int gridWidth, int gridHeight) {
         FuelSquare[][] output = new FuelSquare[gridWidth][gridHeight];
         for(int w = 0; w < output.length; w++) {
@@ -35,6 +37,7 @@ public class FuelDetector extends SubsystemBase {
         }
         return output;
     }
+
     public ArrayList<FuelCluster> getFuelClusters(FuelSquare[][] fuelSquares) {
         ArrayList<FuelCluster> clusters = new ArrayList<>(0);
         int width = fuelSquares.length;
@@ -53,7 +56,7 @@ public class FuelDetector extends SubsystemBase {
                         fuelSquares[w][h - 1].cluster.addFuelSquare(fuelSquare);
                     } else {
                         FuelCluster c = new FuelCluster(fuelSquare);
-                        clusters.add(new FuelCluster(fuelSquare));
+                        clusters.add(c);
                     }
                 }
             }

@@ -13,6 +13,8 @@ public class FuelSquare {
     public boolean isInFuelCluster = false;
     public FuelCluster cluster;
 
+    public double averageDepth;
+
     private int fuelCount = 0;
 
     public FuelSquare(int x, int y, double width, double height) {
@@ -41,5 +43,14 @@ public class FuelSquare {
     public void addToCluster(FuelCluster c) {
         isInFuelCluster = true;
         cluster = c;
+    }
+    public double averageFuelDepth() {
+        int size = fuelList.size();
+        double sum = 0;
+        for(int i = 0; i < size; i++) {
+            sum += fuelList.get(i).depth;
+        }
+        sum /= size;
+        return sum;
     }
 }
