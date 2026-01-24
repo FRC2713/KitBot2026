@@ -35,7 +35,10 @@ import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.FeederConstants;
 import frc.robot.subsystems.intakeAndLauncher.IntakeAndLauncher;
 import frc.robot.subsystems.intakeAndLauncher.IntakeAndLauncherConstants;
+import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.CANHealthLogger;
+import java.util.Arrays;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -132,7 +135,14 @@ public class RobotContainer {
             drive::setPose, // Function that resets the current robot pose to the provided Pose2d
             drive::followTrajectory, // The drive subsystem trajectory follower
             true, // If alliance flipping should be enabled
-            drive // The drive subsystem
+            drive,
+            (sample, isStart) -> {
+              Logger.recordOutput(
+                  "TrajectoryFollowing/ActiveTrajectory",
+                  Arrays.stream(sample.getPoses())
+                      .map(AllianceFlipUtil::apply)
+                      .toArray(Pose2d[]::new));
+            } // The drive subsystem
             );
 
     // Set up auto routines

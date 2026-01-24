@@ -362,11 +362,16 @@ public class Drive extends SubsystemBase {
   public void followTrajectory(SwerveSample sample) {
     // Get the current pose of the robot
     Pose2d pose = getPose();
-
+    Pose2d samplePose2d =
+        new Pose2d(
+            new Translation2d(sample.x, sample.y), new Rotation2d(Radians.of(sample.heading)));
+    Logger.recordOutput("TrajectoryFollowing/pose2d", samplePose2d);
     Logger.recordOutput("TrajectoryFollowing/posex", pose.getX());
     Logger.recordOutput("TrajectoryFollowing/samplex", sample.x);
+
     Logger.recordOutput("TrajectoryFollowing/posey", pose.getY());
     Logger.recordOutput("TrajectoryFollowing/sampley", sample.y);
+
     Logger.recordOutput(
         "TrajectoryFollowing/heading", pose.getRotation().getRadians() + Math.PI * 2);
     Logger.recordOutput(

@@ -8,9 +8,7 @@ public class AutoConstants {
   public static final LoggedTunableNumber autoSpeed =
       new LoggedTunableNumber("Auto/Auto Speed", 1.0);
 
-  /**
-   * Initialize all auto constants by accessing them once so they appear on dashboard
-   */
+  /** Initialize all auto constants by accessing them once so they appear on dashboard */
   public static void initialize() {
     autoSpeed.get();
     launchDuration.get();
