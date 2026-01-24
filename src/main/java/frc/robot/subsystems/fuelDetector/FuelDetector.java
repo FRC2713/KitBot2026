@@ -58,4 +58,11 @@ public class FuelDetector extends SubsystemBase {
         }
         return clusters;
     }
+
+    public ArrayList<FuelCluster> findFuelClusters(FuelCoordinates[] inputs, int gridWidth, int gridHeight) {
+        ArrayList<FuelCoordinates> highChanceFuel = filterByHighChance(inputs);
+        FuelSquare[][] fuelSquares = divideIntoSquares(highChanceFuel, gridWidth, gridHeight);
+        ArrayList<FuelCluster> clusters = getFuelClusters(fuelSquares);
+        return clusters;
+    }
 }
