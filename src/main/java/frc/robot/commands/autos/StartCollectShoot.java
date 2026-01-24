@@ -5,6 +5,7 @@ import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.FeederConstants;
@@ -21,21 +22,19 @@ public class StartCollectShoot {
 
     AutoTrajectory faceFuel = routine.trajectory("FaceFuel");
     AutoTrajectory collectFuel = routine.trajectory("CollectFuel");
-    AutoTrajectory fuelToShot = routine.trajectory("FuelToShot");
+    AutoTrajectory fuelToShotB = routine.trajectory("FuelToShotB");
 
     routine
         .active()
         .onTrue(
             Commands.sequence(
-                new InstantCommand(() -> Commands.print("Going to fuel")),
-                faceFuel.resetOdometry(),
-                faceFuel.cmd()));
+                Commands.print("Going to fuel"), faceFuel.resetOdometry(), faceFuel.cmd()));
 
     faceFuel
         .done()
         .onTrue(
             Commands.sequence(
-                new InstantCommand(() -> Commands.print("Starting intake and collecting fuel")),
+                Commands.print("Starting intake and collecting fuel"),
                 Commands.parallel(
                     intakeAndShooter.voltageCmd(IntakeAndLauncherConstants.intakeVoltage.get()),
                     collectFuel.cmd())));
@@ -43,13 +42,16 @@ public class StartCollectShoot {
         .done()
         .onTrue(
             Commands.sequence(
-                new InstantCommand(() -> Commands.print("Moving to shooting position")),
-                fuelToShot.cmd()));
-    fuelToShot
+                Commands.print("Moving to shooting position"),
+                intakeAndShooter.voltageCmd(IntakeAndLauncherConstants.intakeVoltage.get()),
+                new InstantCommand(() -> driveSubsystem.stop()),
+                new WaitCommand(2),
+                fuelToShotB.cmd()));
+    fuelToShotB
         .done()
         .onTrue(
             Commands.sequence(
-                new InstantCommand(() -> Commands.print("Starting launch sequence")),
+                Commands.print("Starting launch sequence"),
                 Commands.race(
                     Commands.parallel(
                         intakeAndShooter.voltageCmd(IntakeAndLauncherConstants.launchVoltage.get()),

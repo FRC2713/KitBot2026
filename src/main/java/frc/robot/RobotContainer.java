@@ -137,7 +137,7 @@ public class RobotContainer {
             true, // If alliance flipping should be enabled
             drive,
             (sample, isStart) -> {
-              Logger.recordOutput(
+              Logger.recordOutput( 
                   "TrajectoryFollowing/ActiveTrajectory",
                   Arrays.stream(sample.getPoses())
                       .map(AllianceFlipUtil::apply)
