@@ -10,6 +10,8 @@ public class FuelDetector extends SubsystemBase {
 
     public void periodic() {
         //get fuel information, call algorithm
+
+        //Implement when Limelight/camera detection is actually working
     }
     public ArrayList<FuelCoordinates> filterByHighChance(FuelCoordinates[] inputs) {
         //There's probably an easier and shorter way of doing this, but this is simple. Feel free to change it as long as the output doesn't change.
