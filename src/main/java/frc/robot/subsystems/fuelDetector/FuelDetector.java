@@ -1,5 +1,7 @@
 package frc.robot.subsystems.fuelDetector;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.ArrayList;
 
@@ -7,10 +9,13 @@ public class FuelDetector extends SubsystemBase {
   public double fuelChanceThreshold = 80.0;
   public int fuelDensityThreshold = 3;
 
+  private final StringSubscriber fuelSub = NetworkTableInstance.getDefault().getStringTopic("/fuelDetector/fuelData").subscribe("");
+
   public void periodic() {
     // get fuel information, call algorithm
-
-    // Implement when Limelight/camera detection is actually working
+    String fuelData = fuelSub.get("");
+    FuelCoordinates[] fuels = FuelDetector.dataToFuelCoordinates(fuelData);
+    findFuelClusters(fuels, fuelDensityThreshold, fuelDensityThreshold);
   }
 
   public ArrayList<FuelCoordinates> filterByHighChance(FuelCoordinates[] inputs) {
@@ -65,11 +70,23 @@ public class FuelDetector extends SubsystemBase {
     return clusters;
   }
 
-  public ArrayList<FuelCluster> findFuelClusters(
-      FuelCoordinates[] inputs, int gridWidth, int gridHeight) {
+  public ArrayList<FuelCluster> findFuelClusters(FuelCoordinates[] inputs, int gridWidth, int gridHeight) {
     ArrayList<FuelCoordinates> highChanceFuel = filterByHighChance(inputs);
     FuelSquare[][] fuelSquares = divideIntoSquares(highChanceFuel, gridWidth, gridHeight);
     ArrayList<FuelCluster> clusters = getFuelClusters(fuelSquares);
     return clusters;
+  }
+
+  public static FuelCoordinates[] dataToFuelCoordinates(String data) {
+    //data is essentially a special type of .csv file
+    //a - seperates fuels, a , seperates fuel properties
+    //In order of properties: x, y, width, height, chance
+
+    String[] fuels = data.split("-");
+    FuelCoordinates[] output = new FuelCoordinates[fuels.length];
+    for(int i = 0; i < fuels.length; i++) {
+      output[i] = new FuelCoordinates(data);
+    }
+    return output;
   }
 }
