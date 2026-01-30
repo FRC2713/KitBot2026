@@ -23,16 +23,19 @@ public class FuelCoordinates {
     computeDepth(45); // TODO: replace 45 with constant for camera FOV
     chance = c;
   }
+
   public FuelCoordinates(String args) {
-    String[] values = args.split(",");
-    boxX = Double.parseDouble(values[0]);
-    boxY = Double.parseDouble(values[1]);
-    width = Double.parseDouble(values[2]);
-    height = Double.parseDouble(values[3]);
-    chance = Double.parseDouble(values[4]);
-    boxX2 = FuelCoordinates.pointFromDistance(boxX, width);
-    boxY2 = FuelCoordinates.pointFromDistance(boxY, height);
-    computeCenterPoint(boxX, boxY, boxX2, boxY2);
+    if (args.length() > 0) {
+      String[] values = args.split(",");
+      boxX = Double.parseDouble(values[0]);
+      boxY = Double.parseDouble(values[1]);
+      width = Double.parseDouble(values[2]);
+      height = Double.parseDouble(values[3]);
+      chance = Double.parseDouble(values[4]);
+      boxX2 = FuelCoordinates.pointFromDistance(boxX, width);
+      boxY2 = FuelCoordinates.pointFromDistance(boxY, height);
+      computeCenterPoint(boxX, boxY, boxX2, boxY2);
+    }
   }
 
   private static double pointFromDistance(double point, double length) {
@@ -48,6 +51,7 @@ public class FuelCoordinates {
   public void assignSelfToFuelSquare(int gridWidth, int gridHeight, FuelSquare[][] squareArray) {
     int squareX = (int) Math.round(centerX / gridWidth);
     int squareY = (int) Math.round(centerY / gridHeight);
+    System.out.println(squareX + ", " + squareY + " FuelCoordinates.java:54");
     squareArray[squareX][squareY].addFuel(this);
   }
   // TODO: implement depth function

@@ -6,16 +6,19 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.ArrayList;
 
 public class FuelDetector extends SubsystemBase {
-  public double fuelChanceThreshold = 80.0;
-  public int fuelDensityThreshold = 3;
+  public double fuelChanceThreshold = 0.8; // Percentage in decimal format
+  public int fuelDensityThreshold = 1; // fuels per grid square
 
-  private final StringSubscriber fuelSub = NetworkTableInstance.getDefault().getStringTopic("/fuelDetector/fuelData").subscribe("");
+  private final StringSubscriber fuelSub =
+      NetworkTableInstance.getDefault().getStringTopic("/fuelDetector/fuelData").subscribe("");
 
   public void periodic() {
     // get fuel information, call algorithm
     String fuelData = fuelSub.get("");
+    //fuelData = "0.5,0.5,0.5,0.5,1,-"; //Use for testing algorithm
+    System.out.println("fuelData: " + fuelData);
     FuelCoordinates[] fuels = FuelDetector.dataToFuelCoordinates(fuelData);
-    findFuelClusters(fuels, fuelDensityThreshold, fuelDensityThreshold);
+    System.out.println(findFuelClusters(fuels, 5, 5).toString() + " fuel clusters");
   }
 
   public ArrayList<FuelCoordinates> filterByHighChance(FuelCoordinates[] inputs) {
@@ -39,6 +42,7 @@ public class FuelDetector extends SubsystemBase {
       }
     }
     for (int i = 0; i < fuelCoords.size(); i++) {
+      System.out.println(i + " Line 46");
       fuelCoords.get(i).assignSelfToFuelSquare(gridWidth, gridHeight, output);
     }
     return output;
@@ -54,37 +58,42 @@ public class FuelDetector extends SubsystemBase {
         if (fuelSquare.getFuelCount() >= fuelDensityThreshold) {
           if (w + 1 < width && fuelSquares[w + 1][h].isInFuelCluster) {
             fuelSquares[w + 1][h].cluster.addFuelSquare(fuelSquare);
-          } else if (w - 1 < width && fuelSquares[w - 1][h].isInFuelCluster) {
+          } else if (w - 1 >= 0 && fuelSquares[w - 1][h].isInFuelCluster) {
             fuelSquares[w - 1][h].cluster.addFuelSquare(fuelSquare);
           } else if (h + 1 < height && fuelSquares[w][h + 1].isInFuelCluster) {
             fuelSquares[w][h + 1].cluster.addFuelSquare(fuelSquare);
-          } else if (h - 1 < height && fuelSquares[w][h - 1].isInFuelCluster) {
+          } else if (h - 1 >= 0 && fuelSquares[w][h - 1].isInFuelCluster) {
             fuelSquares[w][h - 1].cluster.addFuelSquare(fuelSquare);
           } else {
             FuelCluster c = new FuelCluster(fuelSquare);
             clusters.add(c);
           }
+          System.out.println(clusters.toString() + " Line 71");
         }
       }
     }
     return clusters;
   }
 
-  public ArrayList<FuelCluster> findFuelClusters(FuelCoordinates[] inputs, int gridWidth, int gridHeight) {
+  public ArrayList<FuelCluster> findFuelClusters(
+      FuelCoordinates[] inputs, int gridWidth, int gridHeight) {
     ArrayList<FuelCoordinates> highChanceFuel = filterByHighChance(inputs);
+    System.out.println(highChanceFuel.toString() + " Line 80");
     FuelSquare[][] fuelSquares = divideIntoSquares(highChanceFuel, gridWidth, gridHeight);
+    System.out.println(fuelSquares.toString() + " Line 82");
     ArrayList<FuelCluster> clusters = getFuelClusters(fuelSquares);
+    System.out.println(clusters.toString() + " Line 84");
     return clusters;
   }
 
   public static FuelCoordinates[] dataToFuelCoordinates(String data) {
-    //data is essentially a special type of .csv file
-    //a - seperates fuels, a , seperates fuel properties
-    //In order of properties: x, y, width, height, chance
+    // data is essentially a special type of .csv file
+    // a - seperates fuels, a , seperates fuel properties
+    // In order of properties: x, y, width, height, chance
 
     String[] fuels = data.split("-");
     FuelCoordinates[] output = new FuelCoordinates[fuels.length];
-    for(int i = 0; i < fuels.length; i++) {
+    for (int i = 0; i < fuels.length; i++) {
       output[i] = new FuelCoordinates(data);
     }
     return output;

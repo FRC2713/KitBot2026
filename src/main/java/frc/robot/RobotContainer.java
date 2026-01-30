@@ -31,6 +31,7 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.FeederConstants;
+import frc.robot.subsystems.fuelDetector.FuelDetector;
 import frc.robot.subsystems.intakeAndLauncher.IntakeAndLauncher;
 import frc.robot.subsystems.intakeAndLauncher.IntakeAndLauncherConstants;
 import frc.robot.util.CANHealthLogger;
@@ -55,6 +56,7 @@ public class RobotContainer {
   private final AutoFactory autoFactory;
   public final AutoChooser autoChooser;
   private final CANHealthLogger canLogger;
+  private final FuelDetector fuelDetector;
 
   // Dashboard inputs
 
@@ -93,6 +95,7 @@ public class RobotContainer {
         // new ModuleIOTalonFXS(TunerConstants.BackRight));
         this.intakeAndShooter = new IntakeAndLauncher();
         this.feederAndIndexer = new Feeder();
+        this.fuelDetector = new FuelDetector();
         break;
 
       case SIM:
@@ -106,6 +109,7 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.BackRight));
         this.intakeAndShooter = new IntakeAndLauncher();
         this.feederAndIndexer = new Feeder();
+        this.fuelDetector = new FuelDetector();
         break;
 
       default:
@@ -119,6 +123,7 @@ public class RobotContainer {
                 new ModuleIO() {});
         this.intakeAndShooter = new IntakeAndLauncher();
         this.feederAndIndexer = new Feeder();
+        this.fuelDetector = new FuelDetector();
         break;
     }
     this.canLogger = new CANHealthLogger();
