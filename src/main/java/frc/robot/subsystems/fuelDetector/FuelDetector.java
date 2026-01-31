@@ -17,10 +17,9 @@ public class FuelDetector extends SubsystemBase {
       NetworkTableInstance.getDefault().getStringTopic("/fuelDetector/fuelData").subscribe("");
 
   public void periodic() {
-
     // get fuel information, call algorithm
     String fuelData = fuelSub.get("");
-    // fuelData = "0.5,0.5,0.5,0.5,1,-"; //Use for testing algorithm
+    // fuelData = "0.5,0.5,0.5,0.5,1,;"; //Use for testing algorithm
     // System.out.println("fuelData: " + fuelData);
     FuelCoordinates[] fuels = FuelDetector.dataToFuelCoordinates(fuelData);
     System.out.println(
@@ -42,10 +41,7 @@ public class FuelDetector extends SubsystemBase {
   public FuelSquare[][] divideIntoSquares(
       ArrayList<FuelCoordinates> fuelCoords, int gridWidth, int gridHeight) {
     FuelSquare[][] output =
-        new FuelSquare[gridWidth + 1]
-            [gridHeight
-                + 1]; // Do not change this to not add 1 to grid height and width, the code will
-    // crash.
+        new FuelSquare[gridWidth + 1][gridHeight + 1]; // Do not change this to not add 1 to grid height and width, the code will crash.
     for (int w = 0; w < output.length; w++) {
       for (int h = 0; h < output[w].length; h++) {
         output[w][h] = new FuelSquare(w, h);
