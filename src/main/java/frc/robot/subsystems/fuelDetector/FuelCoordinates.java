@@ -46,7 +46,6 @@ public class FuelCoordinates {
       int gridWidth, int gridHeight, int imageWidth, int imageHeight, FuelSquare[][] squareArray) {
     int squareX = (int) Math.round(centerX / (imageWidth / gridWidth));
     int squareY = (int) Math.round(centerY / (imageHeight / gridHeight));
-    System.out.println("" + squareX + ", " + squareY + " squareX + squareY");
     squareArray[squareX][squareY].addFuel(this);
   }
   // TODO: implement depth function
