@@ -1,5 +1,6 @@
 package frc.robot.subsystems.prototypeLauncher;
 
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -21,26 +22,40 @@ public class PrototypeLauncher extends SubsystemBase {
   private AngularVelocity velocity = RotationsPerSecond.of(0);
   private TalonFXConfiguration leftMotorConfig = new TalonFXConfiguration();
   private LoggedTunableNumber prototypeP = new LoggedTunableNumber("prototypeP", 0);
+  private LoggedTunableNumber prototypekD = new LoggedTunableNumber("prototypekD", 0);
+  private LoggedTunableNumber prototypekv = new LoggedTunableNumber("prototypekv", 0);
 
   @Override
   public void periodic() {
     if (prototypeP.hasChanged(hashCode())) {
-      this.setPID(prototypeP.get());
+      this.setPID(prototypeP.get(), prototypekv.get(), prototypekD.get());
     }
     Logger.recordOutput("Prototype/voltage", trackedvoltage);
     Logger.recordOutput("Prototype/desiredVelocity", velocity);
-    Logger.recordOutput("Prototype/velocity", leftMotor.getVelocity().getValue());
+    Logger.recordOutput("Prototype/rightVelocity", rightMotor.getVelocity().getValue());
+    Logger.recordOutput("Prototype/leftVelocity", leftMotor.getVelocity().getValue().in(RPM));
+    Logger.recordOutput("Prototype/rightError", rightMotor.getClosedLoopError().getValue());
+    Logger.recordOutput("Prototype/leftError", leftMotor.getClosedLoopError().getValue());
+    Logger.recordOutput("Prototype/leftConfigP", leftMotorConfig.Slot0.kP);
+    Logger.recordOutput("Prototype/leftCurrent", leftMotor.getTorqueCurrent().getValueAsDouble());
+    Logger.recordOutput("Prototype/rightCurrent", rightMotor.getTorqueCurrent().getValue());
   }
 
   public PrototypeLauncher() {
+    this.setPID(prototypeP.get(), prototypekv.get(), prototypekD.get());
     rightMotor.setControl(new Follower(leftMotor.getDeviceID(), MotorAlignmentValue.Opposed));
-    this.setPID(prototypeP.get());
   }
 
-  public void setPID(double P) {
+  public void setPID(double P, double kv, double kD) {
     leftMotorConfig.Slot0.kP = P;
-    leftMotorConfig.Slot0.kV = 500;
+    leftMotorConfig.Slot0.kV = kv;
+    leftMotorConfig.Slot0.kD = kD;
+    leftMotorConfig.Feedback.SensorToMechanismRatio = 1;
+    leftMotorConfig.Feedback.RotorToSensorRatio = 1;
     leftMotor.getConfigurator().apply(leftMotorConfig);
+
+    rightMotor.getConfigurator().apply(leftMotorConfig);
+    // rightMotor.setControl(new Follower(leftMotor.getDeviceID(), MotorAlignmentValue.Opposed));
   }
 
   public void setVoltagePrototype(double commandedVoltage) {

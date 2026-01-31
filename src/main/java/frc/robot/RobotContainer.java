@@ -7,7 +7,7 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RPM;
 
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
@@ -239,8 +239,8 @@ public class RobotContainer {
     // prototype controls
     controller
         .x()
-        .onTrue(prototype.velocityCmdPrototype(RotationsPerSecond.of(2000)))
-        .onFalse(prototype.velocityCmdPrototype(RotationsPerSecond.of(0)));
+        .whileTrue(prototype.velocityCmdPrototype(RPM.of(2000)))
+        .onFalse(prototype.velocityCmdPrototype(RPM.of(0)));
   }
 
   /**
