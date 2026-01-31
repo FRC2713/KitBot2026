@@ -27,11 +27,12 @@ public class FuelCoordinates {
   public FuelCoordinates(String args) {
     if (args.length() > 0) {
       String[] values = args.split(",");
+      System.out.println(values[4]);
       boxX = Double.parseDouble(values[0]);
       boxY = Double.parseDouble(values[1]);
       width = Double.parseDouble(values[2]);
       height = Double.parseDouble(values[3]);
-      chance = Double.parseDouble(values[4]);
+      chance = Double.parseDouble(values[4].substring(0, values[4].length() - 1));
       boxX2 = FuelCoordinates.pointFromDistance(boxX, width);
       boxY2 = FuelCoordinates.pointFromDistance(boxY, height);
       computeCenterPoint(boxX, boxY, boxX2, boxY2);
@@ -48,10 +49,10 @@ public class FuelCoordinates {
     centerY = (y2 - y) / 2;
   }
 
-  public void assignSelfToFuelSquare(int gridWidth, int gridHeight, FuelSquare[][] squareArray) {
-    int squareX = (int) Math.round(centerX / gridWidth);
-    int squareY = (int) Math.round(centerY / gridHeight);
-    System.out.println(squareX + ", " + squareY + " FuelCoordinates.java:54");
+  public void assignSelfToFuelSquare(
+      int gridWidth, int gridHeight, int imageWidth, int imageHeight, FuelSquare[][] squareArray) {
+    int squareX = (int) Math.round(centerX / (imageWidth / gridWidth));
+    int squareY = (int) Math.round(centerY / (imageHeight / gridHeight));
     squareArray[squareX][squareY].addFuel(this);
   }
   // TODO: implement depth function
