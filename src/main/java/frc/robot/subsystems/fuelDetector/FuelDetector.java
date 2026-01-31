@@ -8,8 +8,8 @@ import java.util.ArrayList;
 public class FuelDetector extends SubsystemBase {
   public final double fuelChanceThreshold = 0.8; // Percentage in decimal format
   public final int fuelDensityThreshold = 1; // fuels per grid square
-  public final int kGridWidth = 5;
-  public final int kGridHeight = 5;
+  public final int kGridWidth = 2; //number of horizontal grid cells - 1
+  public final int kGridHeight = 2; //number of vertical grid cells - 1
   public final int kImageWidth = 640;
   public final int kImageHeight = 480;
 
@@ -23,8 +23,8 @@ public class FuelDetector extends SubsystemBase {
     // fuelData = "0.5,0.5,0.5,0.5,1,-"; //Use for testing algorithm
     // System.out.println("fuelData: " + fuelData);
     FuelCoordinates[] fuels = FuelDetector.dataToFuelCoordinates(fuelData);
-    // System.out.println(findFuelClusters(fuels, kGridWidth, kGridHeight).toString() + " fuel
-    // clusters");
+    System.out.println(
+        findFuelClusters(fuels, kGridWidth, kGridHeight).toString() + " fuel clusters");
   }
 
   public ArrayList<FuelCoordinates> filterByHighChance(FuelCoordinates[] inputs) {
@@ -41,14 +41,13 @@ public class FuelDetector extends SubsystemBase {
 
   public FuelSquare[][] divideIntoSquares(
       ArrayList<FuelCoordinates> fuelCoords, int gridWidth, int gridHeight) {
-    FuelSquare[][] output = new FuelSquare[gridWidth][gridHeight];
+    FuelSquare[][] output = new FuelSquare[gridWidth + 1][gridHeight + 1]; //Do not change this to not add 1 to grid height and width, the code will crash.
     for (int w = 0; w < output.length; w++) {
       for (int h = 0; h < output[w].length; h++) {
         output[w][h] = new FuelSquare(w, h);
       }
     }
     for (int i = 0; i < fuelCoords.size(); i++) {
-      // System.out.println(i + " Line 46");
       fuelCoords
           .get(i)
           .assignSelfToFuelSquare(gridWidth, gridHeight, kImageWidth, kImageHeight, output);
@@ -76,7 +75,6 @@ public class FuelDetector extends SubsystemBase {
             FuelCluster c = new FuelCluster(fuelSquare);
             clusters.add(c);
           }
-          // System.out.println(clusters.toString() + " Line 71");
         }
       }
     }
@@ -88,7 +86,7 @@ public class FuelDetector extends SubsystemBase {
     ArrayList<FuelCoordinates> highChanceFuel = filterByHighChance(inputs);
     // System.out.println(highChanceFuel.toString() + " Line 80");
     FuelSquare[][] fuelSquares = divideIntoSquares(highChanceFuel, gridWidth, gridHeight);
-    // System.out.println(fuelSquares.toString() + " Line 82");
+    System.out.println(fuelSquares[0][0].toString() + " Line 89");
     ArrayList<FuelCluster> clusters = getFuelClusters(fuelSquares);
     // System.out.println(clusters.toString() + " Line 84");
     return clusters;
@@ -100,7 +98,6 @@ public class FuelDetector extends SubsystemBase {
     // In order of properties: x, y, width, height, chance
 
     String[] fuels = data.split(";");
-    System.out.println(fuels[0] + ", " + " Split string" + fuels[fuels.length - 1]);
     FuelCoordinates[] output = new FuelCoordinates[fuels.length];
     for (int i = 0; i < fuels.length; i++) {
       output[i] = new FuelCoordinates(fuels[i]);

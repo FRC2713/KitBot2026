@@ -58,4 +58,8 @@ public class FuelSquare {
     sum /= size;
     return sum;
   }
+
+  public String toString() {
+    return "Fuel square: " + " Fuel count: " + getFuelCount();
+  }
 }

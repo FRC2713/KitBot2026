@@ -13,11 +13,8 @@ public class FuelCoordinates {
   public double depth;
 
   public FuelCoordinates(double x, double y, double boxWidth, double boxHeight, double c) {
-    boxX = x;
-    boxY = y;
-    boxX2 = FuelCoordinates.pointFromDistance(x, boxWidth);
-    boxY2 = FuelCoordinates.pointFromDistance(y, boxHeight);
-    computeCenterPoint(boxX, boxY, boxX2, boxY2);
+    centerX = x;
+    centerY = y;
     width = boxWidth;
     height = boxHeight;
     computeDepth(45); // TODO: replace 45 with constant for camera FOV
@@ -27,15 +24,11 @@ public class FuelCoordinates {
   public FuelCoordinates(String args) {
     if (args.length() > 0) {
       String[] values = args.split(",");
-      System.out.println(values[4]);
-      boxX = Double.parseDouble(values[0]);
-      boxY = Double.parseDouble(values[1]);
+      centerX = Double.parseDouble(values[0]);
+      centerY = Double.parseDouble(values[1]);
       width = Double.parseDouble(values[2]);
       height = Double.parseDouble(values[3]);
       chance = Double.parseDouble(values[4].substring(0, values[4].length() - 1));
-      boxX2 = FuelCoordinates.pointFromDistance(boxX, width);
-      boxY2 = FuelCoordinates.pointFromDistance(boxY, height);
-      computeCenterPoint(boxX, boxY, boxX2, boxY2);
     }
   }
 
@@ -53,6 +46,7 @@ public class FuelCoordinates {
       int gridWidth, int gridHeight, int imageWidth, int imageHeight, FuelSquare[][] squareArray) {
     int squareX = (int) Math.round(centerX / (imageWidth / gridWidth));
     int squareY = (int) Math.round(centerY / (imageHeight / gridHeight));
+    System.out.println("" + squareX + ", " + squareY + " squareX + squareY");
     squareArray[squareX][squareY].addFuel(this);
   }
   // TODO: implement depth function
